@@ -25,7 +25,7 @@ class Game:
         self.commands["help"] = help
         quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
         self.commands["quit"] = quit
-        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O)", Actions.go, 1)
+        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D)", Actions.go, 1)
         self.commands["go"] = go
         
         # Setup rooms
@@ -51,22 +51,22 @@ class Game:
 
         # Create exits for rooms
 
-        Entrance.exits = {"N" : CrocoIsland, "E" : Taverne, "S" : Cyclone, "O" : PreTReasure}
-        CrocoIsland.exits = {"N" : None, "E" : Questions, "S" : None, "O" : None}
-        Questions.exits = {"N" : None, "E" : None, "S" : Taverne, "O" : None}
-        Cyclone.exits = {"N" : None, "E" : Tortues, "S" : None, "O" : None}
-        Tortues.exits = {"N" : Taverne, "E" : None, "S" : None, "O" : None}
-        Taverne.exits = {"N" : None, "E" : None, "S" : None, "O" : Entrance}
-        Taverne.exits = {"N" : None, "E" : None, "S" : None, "O" : Entrance}           
-        PreTReasure.exits = {"N" : None, "E" : Entrance, "S" : TreasureCave, "O" : None}
-        TreasureCave.exits = {"N" : PreTReasure, "E" : None, "S" : None, "O" : None}
+        Entrance.exits = {"N" : CrocoIsland, "E" : Taverne, "S" : Cyclone, "O" : PreTReasure, "U" : None, "D" : None}
+        CrocoIsland.exits = {"N" : None, "E" : Questions, "S" : None, "O" : None, "U" : None, "D" : None}
+        Questions.exits = {"N" : None, "E" : None, "S" : Taverne, "O" : None, "U" : None, "D" : None}
+        Cyclone.exits = {"N" : None, "E" : Tortues, "S" : None, "O" : None, "U" : None, "D" : None}
+        Tortues.exits = {"N" : Taverne, "E" : None, "S" : None, "O" : None, "U" : None, "D" : None}
+        Taverne.exits = {"N" : None, "E" : None, "S" : None, "O" : Entrance, "U" : None, "D" : None}
+        Taverne.exits = {"N" : None, "E" : None, "S" : None, "O" : Entrance, "U" : None, "D" : None}           
+        PreTReasure.exits = {"N" : None, "E" : Entrance,  "S" : None, "O" : None, "U" : None, "D" : TreasureCave}
+        TreasureCave.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : PreTReasure, "D" : None}
         
         # Setup player and starting room
 
         nom_joueur = input("\nEntrez votre nom: ")
         print(nom_joueur)
-        while len(str(nom_joueur)) < 3 :
-            nom_joueur= input("\nEntrez un nom d'au moins 2 caractères : ")
+        while (len(str(nom_joueur)) < 3) or (len(str(nom_joueur)) > 15):
+            nom_joueur= input("\nEntrez un nom entre 2 et 15 caractères : ")
         self.player = Player(nom_joueur)
         self.player.current_room = Entrance
 
@@ -84,17 +84,37 @@ class Game:
     def process_command(self, command_string) -> None:
 
         # Split the command string into a list of words
-        list_of_words = command_string.split(" ")
+        # On traite les exceptions pour les commandes avec plusieurs mots 
+        command_string = command_string.strip()
+        list_of_words = command_string.split(" ") if command_string else [""]
 
+        direction_valide = True
         command_word = list_of_words[0]
-
+        direction_word = ""
+        if len(list_of_words) > 1:
+            direction_word = list_of_words[1].upper()
+        direction_possible = ["N", "E", "S", "O", "U", "D", "NORD", "EST", "SUD", "OUEST", "UP","DOWN"]
+        
+        #gestion de la commande go
+        
+        if command_word == "go" and len(list_of_words) >= 2: # On vérifie que la commande go est bien suivie d'une direction
+            if direction_word in direction_possible:  #si commande après go est une direction valide 
+                list_of_words[1] = direction_word[0]  #on remplace le nom de la direction par la lettre correspondante
+                direction_valide = True
+            else : 
+                print("\nLa commande 'go' prend 1 seul paramètre parmi N, E, S, O, U, D, NORD, EST, OUEST, SUD, UP, DOWN. \n")
+                direction_valide = False
+        elif command_word == "go" : 
+            print("Il faut indiquer une direction après avoir écrit 'go'. \n")
+            direction_valide = False
+        
         # If the command is not recognized, print an error message
         if command_word == "":
             print("")
         elif command_word not in self.commands.keys():
             print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
         # If the command is recognized, execute it
-        else:
+        elif (direction_valide == True) and (command_word in self.commands.keys()):
             command = self.commands[command_word]
             command.action(self, list_of_words, command.number_of_parameters)
 
