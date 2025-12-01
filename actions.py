@@ -137,3 +137,52 @@ class Actions:
             print("\t- " + str(command))
         print()
         return True
+
+
+    def history(game, list_of_words, number_of_parameters):
+        """
+        Affiche l'historique des pièces visitées par le joueur.
+
+        Args:
+            game (Game): Objet jeu.
+            list_of_words (list): Mots de la commande, ex: ["history"].
+            number_of_parameters (int): Nombre de paramètres attendus (0).
+        Returns:
+            bool: True si exécuté correctement, False sinon.
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))  # La commande 'history' ne prend pas de paramètre.
+            return False
+
+        player = game.player
+        player.get_history()  # Affiche l'historique
+        return True
+
+
+    def back(game, list_of_words, number_of_parameters):
+           l = len(list_of_words)
+           if l != number_of_parameters + 1:
+               command_word = list_of_words[0]
+               print(MSG0.format(command_word=command_word))
+               return False
+    
+           player = game.player
+    
+           if not player.history:
+               print("\nImpossible de revenir en arrière : aucun historique.\n")
+               return False
+    
+           # Revenir à la pièce précédente
+           previous_room = player.history.pop()
+           player.current_room = previous_room
+    
+           # Afficher la description et les sorties disponibles
+           print("\nVous êtes maintenant dans :", player.current_room.get_long_description())
+
+           player.get_history()
+    
+           return True
+    
+    
