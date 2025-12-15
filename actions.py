@@ -138,6 +138,7 @@ class Actions:
         print()
         return True
 
+
     def history(game, list_of_words, number_of_parameters):
         """
         Affiche l'historique des pièces visitées par le joueur.
