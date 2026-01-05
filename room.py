@@ -8,7 +8,7 @@ class Room:
         self.description = description
         self.exits = {}
         self.inventory = {}
-    
+        self.characters =  []    
     # Define the get_exit method.
     def get_exit(self, direction):
 
@@ -49,3 +49,20 @@ class Room:
     # Return a long description of this room including exits.
     def get_long_description(self):
         return f"\nVous venez d'arriver dans {self.name}, {self.description}\n\n{self.get_exit_string()}\n"
+
+
+ # Helpers PNJ (facultatifs mais utiles)
+    def add_character(self, character):
+        """Ajoute un PNJ à cette room si pas déjà présent."""
+        if character not in self.characters:
+            self.characters.append(character)
+            # synchroniser le champ current_room du PNJ si nécessaire
+            character.current_room = self
+
+    def remove_character(self, character):
+        """Retire un PNJ de cette room s'il y est."""
+        try:
+            self.characters.remove(character)
+        except ValueError :       
+            pass
+

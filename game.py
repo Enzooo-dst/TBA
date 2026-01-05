@@ -6,7 +6,9 @@ from room import Room
 from player import Player
 from command import Command
 from actions import Actions
+from character import Character
 
+DEBUG = True
 
 class Game:
 
@@ -16,6 +18,7 @@ class Game:
         self.rooms = []
         self.commands = {}
         self.player = None
+        self.characters = []
 
     # Setup the game
     def setup(self):
@@ -49,7 +52,9 @@ class Game:
         # Ajout de la commande drop
         drop = Command("drop", " <item> : poser un objet dans la pièce", Actions.drop, 1)
         self.commands["drop"] = drop
-
+        # Ajout de la commande talk
+        talk = Command("talk", " <nom> : discuter avec un personnage", Actions.talk, 1)
+        self.commands["talk"] = talk
         
 
     
@@ -184,6 +189,13 @@ class Game:
         self.player = Player(nom_joueur)
         self.player.current_room = Entrance
         #self.player.history.append(Entrance.name)
+        
+        #Création des PNJ 
+        Fouras = Character("Fouras", "un phareur terrifiant", Questions, ["Répondez à mes questions pour récupérer des pièces d'or.","Merci d'avoir répondu à mes questions."])
+        #Ajout des PNJ dans les salles
+        Questions.add_character(Fouras)
+
+        self.characters.append(Fouras)
 
     # Play the game
     def play(self):
@@ -191,8 +203,19 @@ class Game:
         self.print_welcome()
         # Loop until the game is finished
         while not self.finished:
-            # Get the command from the player
-            self.process_command(input("> "))
+
+            command_string = input("> ")
+
+            self.process_command(command_string)
+
+            command_clean = command_string.strip()
+            first_word = command_clean.split()[0].lower() if command_clean else ""
+
+            # Si la commande est 'go' ou 'back' les PNJ bougent
+            if first_word in ["go", "back"]:
+                for npc in self.characters:
+                    npc.move()
+
         return None
 
     # Process the command entered by the player

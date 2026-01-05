@@ -138,7 +138,6 @@ class Actions:
         print()
         return True
 
-
     def history(game, list_of_words, number_of_parameters):
         """
         Affiche l'historique des pièces visitées par le joueur.
@@ -225,6 +224,41 @@ class Actions:
         print(room.get_inventory())
         return True
 
+    def look(game, list_of_words, number_of_parameters):
+        """
+        Affiche la description de la pièce + les items présents + les PNJ présents.
+        Paramètres :
+            game (Game)
+            list_of_words (list)
+            number_of_parameters (int) : attendu 0 pour 'look'
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        room = game.player.current_room
+
+        # 1) Description longue (avec sorties)
+        print(room.get_long_description())
+
+        # 2) Inventaire de la pièce (items présents)
+        print(room.get_inventory())
+
+        # 3) PNJ présents (si l'attribut characters existe et n'est pas vide)
+        pnjs = getattr(room, "characters", [])
+        if pnjs:
+            print("PNJ présents :")
+            for c in pnjs:
+                # suppose que Character.__str__ renvoie "Nom : description (NomDeSalle)"
+                print(f" - {c}")
+        else:
+            print("Il n'y a pas de PNJ ici.")
+
+
+
+
     def take(game, list_of_words, number_of_parameters):
         l = len(list_of_words)
         if l != number_of_parameters + 1:
@@ -310,4 +344,32 @@ class Actions:
         print(f"\nVous avez reposé '{item_name}' dans la pièce.\n")
         return True
 
-    
+    def talk(game, list_of_words, number_of_parameters):
+        """
+        Permet de discuter avec un PNJ présent dans la pièce.
+        """
+        player = game.player
+        room = player.current_room
+
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        target_name = list_of_words[1]
+
+        found_character = None
+
+        if hasattr(room, "characters"):
+            for npc in room.characters:
+                if target_name.lower() in npc.name.lower():
+                    found_character = npc
+                    break
+
+        if found_character:
+            found_character.get_msg()
+            return True
+        else:
+            print(f"\nIl n'y a personne du nom de '{target_name}' ici.\n")
+            return False
