@@ -309,7 +309,7 @@ class Game:
             title="Grand Voyageur",
             description="Déplacez-vous 10 fois entre les lieux.",
             objectives=["Se déplacer 10 fois"],
-            reward="Bottes de voyageur"
+            reward="Perroquet magique"
         )
     
         discovery_quest = Quest(

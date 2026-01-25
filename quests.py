@@ -520,7 +520,7 @@ class QuestManager:
         <BLANKLINE>
         True
         >>> manager.check_room_objectives("Library") # doctest: +NORMALIZE_WHITESPACE
-        ✅ Objectif accompli: Visiter Library
+        ✅ Objectif accompli : Visiter Library
         <BLANKLINE>
         🏆 Quête terminée: Visit Places
         <BLANKLINE>
