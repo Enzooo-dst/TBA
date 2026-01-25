@@ -31,7 +31,7 @@ Le but est d'explorer le monde, de survivre aux dangers (comme les tempêtes) et
 1.  **Cloner le projet :**
     ```bash
     git clone [https://github.com/Enzooo-dst/TBA](https://github.com/Enzooo-dst/TBA)
-    cd NOM_DU_PROJET
+    cd TBA
     ```
 
 2.  **Lancer le jeu :**
