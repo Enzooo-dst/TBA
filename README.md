@@ -2,6 +2,10 @@
 
 Bienvenue dans **Chasse au Trésor**, un jeu d'aventure textuel (RPG) codé en Python. Incarnez un capitaine pirate, naviguez entre les îles, gérez votre équipage et résolvez des énigmes pour trouver le trésor ultime !
 
+**Vidéo descriptive du projet**  
+https://drive.google.com/file/d/1DLH7jAlYwK4VQYPt4azxpYq150Z85avq/view?usp=sharing
+
+
 ## 📝 Description
 
 Ce projet est un jeu d'aventure en ligne de commande (CLI). Le joueur explore un monde composé de différents lieux (Room), interagit avec des objets (Item) et des personnages non-joueurs (PNJ).
