@@ -60,7 +60,6 @@ Une fois le jeu lancé, utilisez les commandes suivantes dans le terminal :
 | **Activer Quête** | `activate <nom>` | Démarrer manuellement une quête. |
 | **Historique** | `history` | Voir la liste des lieux visités. |
 | **Retour** | `back` | Revenir à la salle précédente. |
-| **Récompenses** | `rewards` | Voir les trophées et récompenses spéciales obtenus. |
 | **Aide** | `help` | Afficher toutes les commandes disponibles. |
 | **Quitter** | `quit` | Quitter le jeu. |
 
