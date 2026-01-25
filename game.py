@@ -1,7 +1,7 @@
-# Description: Game class
-
-# Import modules
-
+"""
+Module principal Game.
+Initialise le jeu, les salles, les personnages et la boucle principale.
+"""
 from room import Room
 from player import Player
 from command import Command
@@ -12,325 +12,356 @@ from quests import Quest
 DEBUG = True
 
 class Game:
+    """
+    Classe principale du jeu.
+    Gère l'initialisation et la boucle de jeu.
+    """
 
-    # Constructor
     def __init__(self):
+        """Constructeur du jeu."""
         self.finished = False
         self.rooms = []
         self.commands = {}
         self.player = None
         self.characters = []
+        self.storm_encountered = False
+        # Flags pour les messages uniques
+        self.fouras_done = False
+        self.fouras_hint_given = False
 
-    # Setup the game
     def setup(self):
-
-        # Setup commands
-
-        help = Command("help", " : afficher cette aide", Actions.help, 0)
-        self.commands["help"] = help
-        quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
-        self.commands["quit"] = quit
-        go = Command(
-            "go",
-            " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D)",
-            Actions.go, 1)
-        self.commands["go"] = go
-        # Ajout de la commande history
-        history = Command("history", " : afficher l'historique des lieux visités", Actions.history, 0)
-        self.commands["history"] = history
-        # Ajout de la commande back
-        back = Command("back", " : reviens à la pièce prédedente", Actions.back, 0)
-        self.commands["back"] = back
-        # Ajout de la commande look        
-        look = Command("look", " : observer la pièce (description + items)", Actions.look, 0)
-        self.commands["look"] = look
-        # Ajout de la commande inventory
-        check = Command("check", " : afficher l'inventaire du joueur", Actions.check, 0)
-        self.commands["check"] = check
-        # Ajout de la commande take
-        take = Command("take", " <item> : prendre un objet de la pièce", Actions.take, 1)
-        self.commands["take"] = take
-        # Ajout de la commande drop
-        drop = Command("drop", " <item> : poser un objet dans la pièce", Actions.drop, 1)
-        self.commands["drop"] = drop
-        # Ajout de la commande talk
-        talk = Command("talk", " <nom> : discuter avec un personnage", Actions.talk, 1)
-        self.commands["talk"] = talk
-        #Ajout de la commande quests
-        quests = Command("quests", " : afficher la liste des quêtes", Actions.quests, 0)
-        self.commands["quests"] = quests
-        #Ajout de la commande quest
-        quest = Command("quest", " <nom> : afficher les détails d'une quête", Actions.quest, 1)        
-        self.commands["quest"] = quest
-        #Ajout de la commande activate
-        activate = Command("activate", " <nom> : activer une quête", Actions.activate, 1)
-        self.commands["activate"] = activate
-        #Ajout de la commande rewards
-        rewards = Command("rewards", " : afficher les récompenses obtenues", Actions.rewards, 0)
-        self.commands["rewards"] = rewards
-        
-    
-
-
-        
-        # Setup rooms
-
-        Entrance = Room(
-            "un vaste océan",
-            "vous naviguez dans une eau houlante. Vous apercevez une île à l'horizon."
-        )
-        self.rooms.append(Entrance)
-        CrocoIsland = Room(
-            "Croco Island",
-            "vous allez devoir traverser un marécage rempli de crocodiles, attention à ne pas perdre de matelots !"
-        )
-        self.rooms.append(CrocoIsland)
-        Cyclone = Room(
-            "une tempête furieuse",
-            "vous devrez faire les bon choix pour la traverser avec brio.")
-        self.rooms.append(Cyclone)
-        Taverne = Room(
-            "la Taverne",
-            "vous avez l'opportunité de recruter des membres d'équipage contre des pièces d'or."
-        )
-        self.rooms.append(Taverne)
-        Tortues = Room(
-            "Turtle Island",
-            "des tortues très rares sont cachées sur l'île, vous pouvez en attraper quelques-unes pour les vendre à la taverne."
-        )
-        self.rooms.append(Tortues)
-        PreTReasure = Room(
-            "Treasure Island",
-            "après une heure de marche dans la forêt vous voilà dans une grotte, une immense porte en bois se dresse devant vous."
-        )
-        Tortues.inventory["tortue"] = {"description": "une tortue rare", "weight": 1, "quantity": 1}
-        Taverne.inventory["pièce"] = {"description": "une pièce d'or", "weight": 0.1, "quantity":10}
-        self.rooms.append(PreTReasure)
-        Questions = Room(
-            "le phare aux questions (F.A.Q)",
-            "plus précisément dans le phare du terrifiant père Fouras, répondez à ses questions et il vous laissera récupérer des pièces d'or venant de la cage aux tigres. "
-        )
-        self.rooms.append(Questions)
-        TreasureCave = Room(
-            "la cave aux trésors",
-            "vous avez réussi à regrouper un équipage de valereux pirates et méritez entièrement votre trésor !"
-        )
-        self.rooms.append(TreasureCave)
-
-        # Create exits for rooms
-
-        Entrance.exits = {
-            "N": CrocoIsland,
-            "E": Taverne,
-            "S": Cyclone,
-            "O": PreTReasure,
-            "U": None,
-            "D": None
-        }
-        CrocoIsland.exits = {
-            "N": None,
-            "E": Questions,
-            "S": None,
-            "O": None,
-            "U": None,
-            "D": None
-        }
-        Questions.exits = {
-            "N": None,
-            "E": None,
-            "S": Taverne,
-            "O": None,
-            "U": None,
-            "D": None
-        }
-        Cyclone.exits = {
-            "N": None,
-            "E": Tortues,
-            "S": None,
-            "O": None,
-            "U": None,
-            "D": None
-        }
-        Tortues.exits = {
-            "N": Taverne,
-            "E": None,
-            "S": None,
-            "O": None,
-            "U": None,
-            "D": None
-        }
-        Taverne.exits = {
-            "N": None,
-            "E": None,
-            "S": None,
-            "O": Entrance,
-            "U": None,
-            "D": None
-        }
-        Taverne.exits = {
-            "N": None,
-            "E": None,
-            "S": None,
-            "O": Entrance,
-            "U": None,
-            "D": None
-        }
-        PreTReasure.exits = {
-            "N": None,
-            "E": Entrance,
-            "S": None,
-            "O": None,
-            "U": None,
-            "D": TreasureCave
-        }
-        TreasureCave.exits = {
-            "N": None,
-            "E": None,
-            "S": None,
-            "O": None,
-            "U": None,
-            "D": None
-        }
-
-        # Setup player and starting room
-
-        nom_joueur = input("\nEntrez votre nom: ")
-        print(nom_joueur)
-        while (len(str(nom_joueur)) < 3) or (len(str(nom_joueur)) > 15):
-            nom_joueur = input("\nEntrez un nom entre 2 et 15 caractères : ")
-        self.player = Player(nom_joueur)
-        self.player.current_room = Entrance
-        #self.player.history.append(Entrance.name)
-        
-        #Création des PNJ 
-        Fouras = Character("Fouras", "un phareur terrifiant", Questions, ["Répondez à mes questions pour récupérer des pièces d'or.","Merci d'avoir répondu à mes questions."])
-        #Ajout des PNJ dans les salles
-        Questions.add_character(Fouras)
-
-        self.characters.append(Fouras)
-
-        # Setup quests
+        """Configuration initiale du jeu."""
+        self._setup_commands()
+        self._setup_rooms_and_characters()
+        self._setup_player()
         self._setup_quests()
 
-    # Play the game
+    def _setup_commands(self):
+        """Initialise les commandes disponibles."""
+        self.commands["help"] = Command("help", " : afficher cette aide", Actions.help, 0)
+        self.commands["quit"] = Command("quit", " : quitter le jeu", Actions.quit, 0)
+        self.commands["go"] = Command("go", " <direction> : se déplacer", Actions.go, 1)
+        self.commands["history"] = Command("history", " : historique", Actions.history, 0)
+        self.commands["back"] = Command("back", " : revenir en arrière", Actions.back, 0)
+        self.commands["look"] = Command("look", " : observer la pièce", Actions.look, 0)
+        self.commands["check"] = Command("check", " : inventaire et état", Actions.check, 0)
+        self.commands["take"] = Command("take", " <item> : prendre objet", Actions.take, 1)
+        self.commands["drop"] = Command("drop", " <item> : poser objet", Actions.drop, 1)
+        self.commands["talk"] = Command("talk", " <nom> : discuter", Actions.talk, 1)
+        self.commands["quests"] = Command("quests", " : afficher les quêtes", Actions.quests, 0)
+        self.commands["quest"] = Command("quest", " <nom> : détails quête", Actions.quest, 1)
+        self.commands["activate"] = Command("activate", " <nom> : activer", Actions.activate, 1)
+        self.commands["rewards"] = Command("rewards", " : récompenses", Actions.rewards, 0)
+
+    def _setup_rooms_and_characters(self):
+        """Initialise les salles et les PNJ."""
+        # Création des salles
+        entrance = Room("un vaste océan", "vous naviguez dans une eau houlante.")
+        croco_island = Room("Croco Island", "un marécage rempli de crocodiles.")
+        cyclone = Room("une tempête furieuse", "les vents hurlent.")
+        taverne = Room("la Taverne", "l'endroit idéal pour recruter.")
+        tortues = Room("Turtle Island", "des tortues très rares sont cachées.")
+        pre_treasure = Room("Treasure Island", "une immense porte en bois se dresse.")
+        questions = Room("le phare aux questions (F.A.Q)", "le repaire du père Fouras.")
+        treasure_cave = Room("la cave aux trésors", "l'aboutissement de votre voyage !")
+
+        self.rooms.extend([entrance, croco_island, cyclone, taverne, tortues,
+                           pre_treasure, questions, treasure_cave])
+
+        # Configuration des inventaires
+        tortues.inventory["tortue"] = {
+            "description": "une tortue rare", "weight": 1, "quantity": 1
+        }
+        taverne.inventory["pièce"] = {
+            "description": "une pièce d'or", "weight": 0.1, "quantity": 10
+        }
+
+        # Configuration des sorties
+        entrance.exits = {
+            "N": croco_island, "E": taverne, "S": cyclone, "O": pre_treasure
+        }
+        croco_island.exits = {"E": questions}
+        questions.exits = {"S": taverne}
+        cyclone.exits = {"E": tortues}
+        tortues.exits = {"N": taverne}
+        taverne.exits = {"O": entrance}
+        pre_treasure.exits = {"E": entrance, "D": treasure_cave}
+        treasure_cave.exits = {"U": pre_treasure}
+
+        # Configuration des PNJ
+        fouras = Character("Fouras", "un vieil homme", questions,
+                           ["Approche...", "Je garde les clés."])
+        questions.add_character(fouras)
+        self.characters.append(fouras)
+
+        marchand = Character("Marchand", "recruteur", taverne,
+                             ["J'ai des hommes et j'achète les tortues."])
+        taverne.add_character(marchand)
+        self.characters.append(marchand)
+
+        gardien = Character("Gardien", "colosse", pre_treasure,
+                            ["Seul un capitaine digne passera."])
+        pre_treasure.add_character(gardien)
+        self.characters.append(gardien)
+
+    def _setup_player(self):
+        """Configure le joueur."""
+        nom_joueur = input("\nEntrez votre nom: ")
+        while len(str(nom_joueur)) < 2 or len(str(nom_joueur)) > 15:
+            nom_joueur = input("\nEntrez un nom entre 2 et 15 caractères : ")
+        self.player = Player(nom_joueur)
+        # La salle de départ est la première de la liste (Entrance)
+        self.player.current_room = self.rooms[0]
+
+    def _setup_quests(self):
+        """Configure les quêtes."""
+        objectives_explo = [
+            f"Visiter {r.name}" for r in self.rooms if r.name != "la cave aux trésors"
+        ]
+
+        exploration_quest = Quest(
+            title="Grand Explorateur",
+            description="Explorez tous les lieux de ce monde (sauf la cachette finale).",
+            objectives=objectives_explo,
+            reward="Titre de Grand Explorateur"
+        )
+        self.player.quest_manager.add_quest(exploration_quest)
+
+        # CORRECTION : Utiliser le manager pour activer la quête
+        # Cela permet de l'ajouter à la liste active_quests que le manager surveille.
+        self.player.quest_manager.activate_quest("Grand Explorateur")
+
+        # Validation immédiate de la salle de départ pour cette quête
+        self.player.quest_manager.check_room_objectives(self.player.current_room.name)
+
+        storm_quest = Quest(
+            title="Esquiver la tempête",
+            description="Brave la tempête pour sauver ton équipage.",
+            objectives=["Survivre au Cyclone"],
+            reward="Compass de survie"
+        )
+        self.player.quest_manager.add_quest(storm_quest)
+
+        self.player.quest_manager.add_quest(Quest(
+            "Énigme du Phare I", "Réponds à la première question de Fouras.",
+            ["Répondre 9"], "5 pièces d'or"
+        ))
+        self.player.quest_manager.add_quest(Quest(
+            "Énigme du Phare II", "Réponds à la deuxième question de Fouras.",
+            ["Répondre perroquet"], "5 pièces d'or"
+        ))
+
     def play(self):
+        """Lance la boucle principale du jeu."""
         self.setup()
         self.print_welcome()
-        # Loop until the game is finished
         while not self.finished:
-
             command_string = input("> ")
-
             self.process_command(command_string)
 
             command_clean = command_string.strip()
             first_word = command_clean.split()[0].lower() if command_clean else ""
-
-            # Si la commande est 'go' ou 'back' les PNJ bougent
             if first_word in ["go", "back"]:
                 for npc in self.characters:
-                    npc.move()
-
+                    if npc.name not in ["Marchand", "Gardien"]:
+                        npc.move()
         return None
 
-    # Process the command entered by the player
     def process_command(self, command_string) -> None:
-
-        # Split the command string into a list of words
-        # On traite les exceptions pour les commandes avec plusieurs mots
-
+        """Traite la commande saisie par le joueur."""
         command_string = command_string.strip()
         list_of_words = command_string.split(" ") if command_string else [""]
+        command_word = list_of_words[0].lower()
 
-        direction_valide = True
-        command_word = list_of_words[0]
-        direction_word = ""
-        if len(list_of_words) > 1:
-            direction_word = list_of_words[1].upper()
-        direction_possible = [
-            "N", "E", "S", "O", "U", "D", "NORD", "EST", "SUD", "OUEST", "UP",
-            "DOWN"
-        ]
-
-        #gestion de la commande go
-
-        if command_word == "go" and len(
-                list_of_words
-        ) >= 2:  # On vérifie que la commande go est bien suivie d'une direction
-            if direction_word in direction_possible:  #si commande après go est une direction valide
-                list_of_words[1] = direction_word[
-                    0]  #on remplace le nom de la direction par la lettre correspondante
-                direction_valide = True
+        # Gestion intelligente des directions pour 'go'
+        if command_word == "go" and len(list_of_words) > 1:
+            raw_dir = list_of_words[1].upper()
+            mapping = {
+                "NORD": "N", "EST": "E", "SUD": "S", "OUEST": "O",
+                "UP": "U", "DOWN": "D",
+                "N": "N", "E": "E", "S": "S", "O": "O", "U": "U", "D": "D"
+            }
+            if raw_dir in mapping:
+                list_of_words[1] = mapping[raw_dir]
             else:
-                print(
-                    "\nLa commande 'go' prend 1 seul paramètre parmi N, E, S, O, U, D, NORD, EST, OUEST, SUD, UP, DOWN. \n"
-                )
-                direction_valide = False
-        elif command_word == "go":
-            print("Il faut indiquer une direction après avoir écrit 'go'. \n")
-            direction_valide = False
+                list_of_words[1] = raw_dir
 
-        # If the command is not recognized, print an error message
-        if command_word == "":
-            print("")
-        elif command_word not in self.commands.keys():
-            print(
-                f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n"
-            )
-        # If the command is recognized, execute it
-        elif (direction_valide == True) and (command_word
-                                             in self.commands.keys()):
+        if command_word not in self.commands:
+            print(f"\nCommande '{command_word}' non reconnue. Entrez 'help'.\n")
+        else:
             command = self.commands[command_word]
             command.action(self, list_of_words, command.number_of_parameters)
 
-    # Print the welcome message
     def print_welcome(self):
-        print(
-            f"\nBienvenue dans cette chasse au trésor, {self.player.name} le brave !"
-        )
-        print("Entrez 'help' si jamais vous avez besoin d'aide.")
-        #
+        """Affiche le message de bienvenue."""
+        print(f"\nBienvenue {self.player.name} ! "
+              f"Votre équipage de {self.player.crew} hommes est prêt.")
         print(self.player.current_room.get_long_description())
 
-    def _setup_quests(self):
-        """Initialize all quests."""
-        exploration_quest = Quest(
-            title="Grand Explorateur",
-            description="Explorez tous les lieux de ce monde mystérieux.",
-            objectives=["Visiter Forest"
-                        , "Visiter Tower"
-                        , "Visiter Cave"
-                        , "Visiter Cottage"
-                        , "Visiter Castle"],
-            reward="Titre de Grand Explorateur"
-        )
-    
-        travel_quest = Quest(
-            title="Grand Voyageur",
-            description="Déplacez-vous 10 fois entre les lieux.",
-            objectives=["Se déplacer 10 fois"],
-            reward="Perroquet magique"
-        )
-    
-        discovery_quest = Quest(
-            title="Découvreur de Secrets",
-            description="Découvrez les trois lieux les plus mystérieux.",
-            objectives=["Visiter Cave"
-                        , "Visiter Tower"
-                        , "Visiter Castle"],
-            reward="Clé dorée"
-        )
-    
-        # Add quests to player's quest manager
-        self.player.quest_manager.add_quest(exploration_quest)
-        self.player.quest_manager.add_quest(travel_quest)
-        self.player.quest_manager.add_quest(discovery_quest)
+    # --- ÉVÉNEMENTS SPÉCIAUX ---
 
+    def check_room_events(self):
+        """Vérifie les événements liés à la salle actuelle."""
+        current_room_name = self.player.current_room.name
 
+        # Tempête
+        if current_room_name == "une tempête furieuse" and not self.storm_encountered:
+            self.player.quest_manager.activate_quest("Esquiver la tempête")
+            self._run_storm_sequence()
+            self.storm_encountered = True
+
+        # Fouras
+        if current_room_name == "le phare aux questions (F.A.Q)":
+            self.player.quest_manager.activate_quest("Énigme du Phare I")
+            self.player.quest_manager.activate_quest("Énigme du Phare II")
+
+            if not self.fouras_hint_given:
+                print("\n💡 Maintenant que tu as visité le phare du mystérieux Fouras,"
+                      " tu as débloqué une quête :")
+                print("Pour l'activer tu dois Trouver Fouras et faire 'talk Fouras', "
+                      "réponds à ses questions et il te donnera des pièces d'or.\n")
+                self.fouras_hint_given = True
+
+    def _run_storm_sequence(self):
+        """Exécute la séquence de la tempête."""
+        print("\n⚡ UNE VAGUE SCÉLÉRATE ARRIVE SUR TOI ET TON ÉQUIPAGE ! ⚡")
+        print("ACTION REQUISE IMMÉDIATE (Vous ne pouvez pas fuir)")
+        print("  1 : La prendre de face (Risque pour le navire, équipage protégé)")
+        print("  2 : La prendre en biais (Le navire tangue, risque de chute)")
+
+        while True:
+            choix1 = input("\nQuel est ton choix (1 ou 2) ? > ")
+            if choix1 in ["1", "2"]:
+                break
+            print("Choix invalide.")
+
+        if choix1 == "2":
+            print("\n🌊 Le bateau tangue violemment... Un homme passe par-dessus bord !")
+            self.player.lose_crew(1)
+        else:
+            print("\n🌊 Le bateau craque mais tient bon. L'équipage est secoué mais sauf.")
+
+        print("\n🌪️ Le cœur du Cyclone se rapproche...")
+        print("  1 : Foncez dans l'œil du cyclone (Calme mais dangereux)")
+        print("  2 : Tenter de fuir la zone (Long et périlleux)")
+
+        while True:
+            choix2 = input("\nQuel est ton choix (1 ou 2) ? > ")
+            if choix2 in ["1", "2"]:
+                break
+            print("Choix invalide.")
+
+        if choix2 == "2":
+            print("\n💨 Les vents contraires vous ralentissent. "
+                  "Une déferlante emporte un autre marin !")
+            self.player.lose_crew(1)
+        else:
+            print("\n💨 Vous traversez le mur de vent et trouvez le calme temporaire de l'œil.")
+
+        self.player.quest_manager.complete_objective("Survivre au Cyclone")
+
+    def handle_fouras_interaction(self):
+        """Gère le dialogue interactif avec Fouras."""
+        print("\n👴 Fouras : 'Héhéhé ! Tu ne sortiras pas d'ici sans avoir utilisé ta tête.'")
+
+        q1 = self.player.quest_manager.get_quest_by_title("Énigme du Phare I")
+        if q1 and q1.is_active and not q1.is_completed:
+            print("\n👴 Fouras : 'Question 1 : Combien d'îles (salles) "
+                  "sont présentes dans ton monde ?'")
+            rep = input("Votre réponse (écrivez le chiffre) > ")
+            if rep.strip() == "9":
+                print("\n👴 Fouras : 'Bien joué ! Tu as gagné 5 pièces d'or.'")
+                self.player.quest_manager.complete_objective("Répondre 9")
+                self._give_gold(5)
+            else:
+                print("\n👴 Fouras : 'Faux ! Tu perds ta chance pour cette question.'")
+
+        q2 = self.player.quest_manager.get_quest_by_title("Énigme du Phare II")
+        if q2 and q2.is_active and not q2.is_completed:
+            print("\n👴 Fouras : 'Question 2 : Quel animal est votre bras droit "
+                  "et se place sur votre épaule ?'")
+            rep = input("Votre réponse > ")
+            if "perroquet" in rep.lower():
+                print("\n👴 Fouras : 'Exactement ! Voici 5 pièces d'or.'")
+                self.player.quest_manager.complete_objective("Répondre perroquet")
+                self._give_gold(5)
+            else:
+                print("\n👴 Fouras : 'Non, ce n'est pas ça.'")
+
+        print("\n👴 Fouras : 'La session est terminée.'\n")
+
+    def handle_merchant_interaction(self):
+        """Gère le dialogue avec le marchand."""
+        print("\n💰 Marchand : 'Bienvenue à la taverne, Capitaine !'")
+        print("💰 Marchand : 'Je peux te fournir des hommes (5 or) ou "
+              "t'acheter tes tortues (5 or).'")
+
+        while True:
+            current_gold = 0
+            if "pièce" in self.player.inventory:
+                current_gold = self.player.inventory["pièce"]["quantity"]
+
+            tortue_count = 0
+            if "tortue" in self.player.inventory:
+                tortue_count = self.player.inventory["tortue"]["quantity"]
+
+            print(f"\n--- BOURSE: {current_gold} Or | ÉQUIPAGE: {self.player.crew} "
+                  f"| TORTUES: {tortue_count} ---")
+            print("1. Acheter un matelot (-5 or)")
+            print("2. Vendre une tortue (+5 or)")
+            print("3. Quitter la discussion")
+
+            choice = input("Votre choix (1, 2 ou 3) > ")
+
+            if choice == "3":
+                print("\n💰 Marchand : 'À la prochaine !'")
+                break
+
+            if choice == "1":
+                if current_gold >= 5:
+                    self._remove_gold(5)
+                    self.player.add_crew(1)
+                else:
+                    print("\n💰 Marchand : 'Pas assez d'argent !'")
+
+            elif choice == "2":
+                if tortue_count > 0:
+                    if tortue_count == 1:
+                        del self.player.inventory["tortue"]
+                    else:
+                        self.player.inventory["tortue"]["quantity"] -= 1
+                    self._give_gold(5)
+                    print("\n💰 Marchand : 'Quelle belle bête ! Voici 5 pièces d'or.'")
+                else:
+                    print("\n💰 Marchand : 'Tu n'as pas de tortue à vendre !'")
+            else:
+                print("Choix invalide.")
+
+    def _give_gold(self, amount):
+        """Ajoute de l'or à l'inventaire."""
+        item_name = "pièce"
+        pinfo = self.player.inventory.get(item_name)
+        if pinfo is None:
+            self.player.inventory[item_name] = {
+                "description": "une pièce d'or",
+                "weight": 0.1,
+                "quantity": amount
+            }
+        else:
+            pinfo["quantity"] += amount
+        print(f"💰 (+{amount} pièces d'or ajoutées)")
+
+    def _remove_gold(self, amount):
+        """Retire de l'or de l'inventaire."""
+        if "pièce" in self.player.inventory:
+            self.player.inventory["pièce"]["quantity"] -= amount
+            if self.player.inventory["pièce"]["quantity"] <= 0:
+                del self.player.inventory["pièce"]
+            print(f"💰 (-{amount} pièces d'or)")
 
 
 def main():
-    # Create a game object and play the game
+    """Point d'entrée du jeu."""
     Game().play()
 
 
