@@ -1,26 +1,35 @@
+Lien de présentation vidéo du projet : https://drive.google.com/file/d/1DLH7jAlYwK4VQYPt4azxpYq150Z85avq/view?usp=drive_link
+
 # 🏴‍☠️ Chasse au Trésor - Aventure Textuelle
 
-Bienvenue dans **Chasse au Trésor**, un jeu d'aventure textuel (RPG) codé en Python. Incarnez un capitaine pirate, naviguez entre les îles, gérez votre équipage et résolvez des énigmes pour trouver le trésor ultime !
+**Hissez les voiles, Capitaine !**
+Bienvenue dans **Chasse au Trésor**, un jeu de rôle (RPG) textuel codé en Python. Explorez des îles mystérieuses, gérez votre équipage et amassez de l'or pour atteindre le trésor ultime.
 
-## 📝 Description
+## 📝 Synopsis
 
-Ce projet est un jeu d'aventure en ligne de commande (CLI). Le joueur explore un monde composé de différents lieux (Room), interagit avec des objets (Item) et des personnages non-joueurs (PNJ).
+Vous incarnez un capitaine pirate naviguant sur des eaux dangereuses. Votre objectif est d'entrer dans la **Cave aux Trésors**. Cependant, l'entrée est gardée par un colosse qui ne laisse passer que les capitaines dirigeant un équipage complet et puissant.
 
-Le but est d'explorer le monde, de survivre aux dangers (comme les tempêtes) et d'accumuler des richesses en accomplissant des quêtes dynamiques.
+Vous devrez explorer, résoudre des énigmes, chasser des animaux rares et commercer pour renforcer vos rangs avant d'atteindre la victoire.
 
-## ✨ Fonctionnalités Principales
+## ✨ Fonctionnalités Clés
 
-* **Exploration Libre :** Déplacez-vous à travers différentes zones (Île aux Crocodiles, Taverne, Cyclone, etc.) via les points cardinaux.
-* **Système de Quêtes Avancé 📜 :**
-    * Activation et suivi de quêtes multiples (exploration, énigmes, survie).
-    * Objectifs variés : visiter des lieux, parler à des PNJ, accumuler des objets.
-* **Gestion d'Équipage 👥 :** * Vous commencez avec 10 matelots.
-    * Vos choix lors des événements (comme la Tempête) impactent directement la survie de votre équipage.
-* **Événements Interactifs Scriptés :**
-    * ⚡ **Le Cyclone :** Une séquence de choix multiples où vous devez décider comment affronter les vagues et le vent pour minimiser les pertes.
-    * 🧩 **Le Père Fouras :** Un PNJ interactif qui pose des questions via la commande `talk`. Répondre correctement vous rapporte de l'or.
-* **Inventaire et Économie :** Ramassez des objets, gérez leur poids et accumulez des pièces d'or.
-* **PNJ Vivants :** Les personnages (comme Fouras) se déplacent d'une pièce à l'autre de manière autonome.
+### 1. Gestion d'Équipage et Économie 💰
+* **Votre Équipage :** Vous commencez l'aventure avec **6 matelots**.
+* **Le Recrutement :** Pour gagner, vous devez recruter de nouveaux pirates à la **Taverne**. Le Marchand vous vendra des hommes contre de l'or (5 pièces/homme).
+* **Gagner de l'Or :**
+    * Chassez des **tortues rares** sur *Turtle Island* et revendez-les au Marchand.
+    * Répondez aux énigmes du **Père Fouras** dans le Phare pour gagner des bourses d'or.
+
+### 2. Événements Interactifs & Dangers ⚡
+Le monde est vivant et réagit à vos actions :
+* **La Tempête (Cyclone) :** Une zone dangereuse où vous devrez faire des choix rapides (QCM) pour sauver votre navire. **Attention :** de mauvaises décisions entraîneront la mort définitive de vos marins.
+* **Le Gardien du Trésor :** Il bloque l'accès à la salle finale si votre équipage n'est pas au complet (Minimum 8 ou 10 membres selon la difficulté).
+
+### 3. Système de Quêtes Avancé 📜
+Le jeu intègre un gestionnaire de quêtes (`QuestManager`) :
+* **Grand Explorateur :** Visitez tous les lieux de la carte.
+* **Esquiver la tempête :** Survivez au passage dans le Cyclone.
+* **Énigmes du Phare :** Trouvez les bonnes réponses aux questions de Fouras.
 
 ## 🚀 Installation et Lancement
 
@@ -39,52 +48,49 @@ Le but est d'explorer le monde, de survivre aux dangers (comme les tempêtes) et
     python game.py
     ```
 
-## 🎮 Commandes du Jeu
+## 🎮 Guide des Commandes
 
-Une fois le jeu lancé, utilisez les commandes suivantes dans le terminal :
+Utilisez ces commandes pour interagir avec le monde :
 
 | Commande | Syntaxe | Description |
 | :--- | :--- | :--- |
-| **Se déplacer** | `go <N/E/S/O/U/D>` | Aller vers le Nord, Est, Sud, Ouest, Haut ou Bas. |
-| **Observer** | `look` | Regarder la description de la salle, les objets et les PNJ présents. |
-| **État & Inventaire**| `check` | Voir votre inventaire et le nombre de matelots restants. |
-| **Prendre** | `take <objet>` | Mettre un objet dans votre sac. |
+| **Se déplacer** | `go <N/E/S/O>` | Se déplacer vers le Nord, l'Est, le Sud ou l'Ouest. |
+| **Parler** | `talk <Nom>` | **Vital !** Permet de commercer avec le `Marchand` ou de répondre à `Fouras`. |
+| **Observer** | `look` | Affiche la description de la salle, les objets et les personnages. |
+| **État Joueur** | `check` | Affiche votre **inventaire**, votre **or** et le nombre de **matelots**. |
+| **Prendre** | `take <objet>` | Ramasser un objet (ex: `take tortue`). |
 | **Poser** | `drop <objet>` | Poser un objet au sol. |
-| **Parler** | `talk <nom>` | Discuter avec un PNJ (ex: `talk Fouras` pour les énigmes). |
-| **Quêtes** | `quests` | Afficher la liste de toutes les quêtes. |
-| **Détails Quête** | `quest <nom>` | Voir les objectifs détaillés d'une quête spécifique. |
-| **Activer Quête** | `activate <nom>` | Démarrer manuellement une quête. |
-| **Historique** | `history` | Voir la liste des lieux visités. |
-| **Retour** | `back` | Revenir à la salle précédente. |
-| **Récompenses** | `rewards` | Voir les trophées et récompenses spéciales obtenus. |
-| **Aide** | `help` | Afficher toutes les commandes disponibles. |
-| **Quitter** | `quit` | Quitter le jeu. |
+| **Quêtes** | `quests` | Voir la liste des quêtes et leur statut. |
+| **Détails Quête**| `quest <Nom>` | Voir les objectifs précis d'une quête. |
+| **Historique** | `history` | Voir les lieux visités. |
+| **Quitter** | `quit` | Quitter la partie. |
 
-## 📂 Structure du Code
+## 🗺️ Aperçu du Monde
 
-Le projet est organisé selon une architecture orientée objet (POO) modulaire :
+* **L'Océan (Départ) :** Le point central.
+* **La Taverne :** Le lieu de commerce (Achat d'équipage / Vente de tortues).
+* **Turtle Island :** Lieu de chasse (Tortues).
+* **Le Cyclone :** Zone de danger (Risque de perte d'équipage).
+* **Le Phare (F.A.Q) :** Lieu de savoir et de gain d'or rapide via Fouras.
+* **Treasure Island :** L'antichambre du trésor, gardée par le Gardien.
 
-* `game.py` : Le moteur principal. Initialise le monde, gère la boucle de jeu et les événements spéciaux (Tempête, Fouras).
-* `player.py` : Gère le joueur, l'inventaire, l'historique de déplacement et l'équipage.
-* `room.py` : Définit les lieux, les descriptions et les connexions (sorties).
-* `quests.py` : Classes `Quest` et `QuestManager` pour gérer les objectifs et les statuts.
-* `character.py` : Gestion des PNJ et de leur IA de déplacement.
-* `item.py` : Définition des objets (poids, description).
-* `command.py` & `actions.py` : Traitement des commandes textuelles et logique des actions.
+## 🌟 Exemple de Scénario (Spoilers !)
 
-## 🌟 Exemple de Scénario
+1.  Allez à *Turtle Island*, ramassez une `tortue`.
+2.  Allez à la *Taverne*, faites `talk Marchand`.
+3.  Choisissez l'option pour **vendre la tortue** (+5 Or).
+4.  Utilisez l'or pour **acheter un matelot**.
+5.  Allez voir *Fouras*, répondez à son énigme pour gagner encore plus d'or.
+6.  Une fois votre équipage au complet, foncez vers *Treasure Island* et affrontez le Gardien !
 
-```text
-> Bienvenue Capitaine ! Votre équipage de 10 hommes est prêt.
-> Vous êtes dans un vaste océan.
+## 📂 Architecture du Code
 
-> go S
-... Vous entrez dans une tempête furieuse !
-⚡ UNE VAGUE SCÉLÉRATE ARRIVE SUR TOI ET TON ÉQUIPAGE ! ⚡
-Tu as deux choix :
-  1 : La prendre de face
-  2 : La prendre en biais
-Quel est ton choix (1 ou 2) ? > 2
+* `game.py` : Moteur principal, initialise le monde et les événements (Tempête, Fouras).
+* `player.py` : Gère le joueur, l'inventaire et le **compteur d'équipage**.
+* `room.py` : Définit les lieux et leurs connexions.
+* `character.py` : Gère les PNJ (Personnages Non Joueurs) et leurs déplacements.
+* `quests.py` : Système de gestion des objectifs et récompenses.
+* `actions.py` : Contient la logique de toutes les commandes (`go`, `talk`, etc.).
 
-🌊 Le bateau tangue violemment... Un homme passe par-dessus bord !
-💀 Drame ! Vous avez perdu 1 membre(s) d'équipage !
+---
+*Projet réalisé en Python - Bon vent et bonne chasse !* 🏴‍☠️

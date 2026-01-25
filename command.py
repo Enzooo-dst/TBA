@@ -1,44 +1,30 @@
-# This file contains the Command class.
-
+"""
+Module définissant la classe Command.
+Structure les commandes disponibles dans le jeu.
+"""
 
 class Command:
     """
-    This class represents a command. A command is composed of a command word, a help string, an action and a number of parameters.
+    Classe représentant une commande du jeu.
 
     Attributes:
-        command_word (str): The command word.
-        help_string (str): The help string.
-        action (function): The action to execute when the command is called.
-        number_of_parameters (int): The number of parameters expected by the command.
-
-    Methods:
-        __init__(self, command_word, help_string, action, number_of_parameters) : The constructor.
-        __str__(self) : The string representation of the command.
-
-    Examples:
-
-    >>> from actions import go
-    >>> command = Command("go", "Permet de se déplacer dans une direction.", go, 1)
-    >>> command.command_word
-    'go'
-    >>> command.help_string
-    'Permet de se déplacer dans une direction.'
-    >>> type(command.action)
-    <class 'function'>
-    >>> command.number_of_parameters
-    1
-
+        command_word (str): Le mot-clé de la commande.
+        help_string (str): Le message d'aide.
+        action (callable): La fonction à exécuter.
+        number_of_parameters (int): Le nombre de paramètres attendus.
     """
 
-    # The constructor.
-    def __init__(self, command_word, help_string, action,
-                 number_of_parameters):
+    def __init__(self, command_word, help_string, action, number_of_parameters):
+        """
+        Constructeur de la classe Command.
+        """
         self.command_word = command_word
         self.help_string = help_string
         self.action = action
         self.number_of_parameters = number_of_parameters
 
-    # The string representation of the command.
     def __str__(self):
-        return  self.command_word \
-                + self.help_string
+        """
+        Retourne la représentation textuelle de la commande (pour l'aide).
+        """
+        return self.command_word + self.help_string
